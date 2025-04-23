@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="accent">#678DFF</color> <!-- Accent -->
+    <color name="black">#2D2B35</color>
+    <color name="gray_700">#666A7B</color>
+    <color name="light_gray">#E0E3EC</color>
+    <color name="white">#FFFFFF</color>
+    <color name="gray_400">#B3B3B3</color>
+    <color name="gray_100">#EFF0F6</color>
+    <color name="green">#75EA63</color>
+    <color name="red">#FF7070</color>
+    <color name="blue">#8785F7</color>
+    <color name="orange">#FF9D52</color>
+    <color name="yellow">#FFD541</color>
+    <color name="purple">#B847ED</color>
+    <color name="aqua">#6DE6D7</color>
+    <color name="dark_blue">#7381BA</color>
+</resources>
