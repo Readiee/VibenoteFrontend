@@ -13,3 +13,47 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+.idea/
+.gradle/
+*.iws
+*.ipr
+*.sw?
+*.log
+
+# Build output
+/build/
+**/build/
+
+# Local configuration
+*.keystore
+
+# Kotlin
+*.kotlin_module
+
+# Jetpack Compose previews cache
+*.pb
+*.xml
+captures/
+.navigation/
+
+# OS-specific
+Thumbs.db
+
+# JetBrains Rider
+*.sln
+*.csproj
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Misc
+*.tmp
+*.bak
+*.orig
+*.rej
+
+# Node/npm if you use it (optional)
+node_modules/
+
