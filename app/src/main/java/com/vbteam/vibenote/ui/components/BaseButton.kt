@@ -46,7 +46,7 @@ fun BaseButton(
         }
 
         AppButtonType.SECONDARY -> {
-            backgroundColor = MaterialTheme.colorScheme.surface
+            backgroundColor = MaterialTheme.colorScheme.secondary
             contentColor = MaterialTheme.colorScheme.onBackground
         }
 
@@ -65,7 +65,7 @@ fun BaseButton(
             containerColor = backgroundColor,
             contentColor = contentColor,
             disabledContainerColor = backgroundColor,
-            disabledContentColor = contentColor.copy(alpha = 0.5f)
+            disabledContentColor = contentColor.copy(alpha = 0.80f)
         ),
         shape = shape,
         modifier = modifier
