@@ -24,7 +24,7 @@ fun NoteRoute(
         navController = navController,
         uiState = uiState,
         onBack = {
-            viewModel.saveNote()
+            if(uiState.isUpdated) viewModel.saveNote()
             navController.popBackStack()
         },
         onSaveButtonClicked = {

@@ -12,5 +12,7 @@ data class NoteUiState(
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val updatedAt: LocalDateTime? = null,
 
-    val showAuthRequiredDialog: Boolean = false
+    val showAuthRequiredDialog: Boolean = false,
+
+    val isUpdated: Boolean = false
 )
