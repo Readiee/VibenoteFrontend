@@ -74,7 +74,7 @@ val typography = Typography(
     labelSmall = TextStyle(
         fontFamily = InterFontFamily,
         fontWeight = FontWeight.Medium,
-        fontSize = 13.sp
+        fontSize = 11.sp
     ),
     headlineSmall = TextStyle(
         fontFamily = DaysOneFontFamily,

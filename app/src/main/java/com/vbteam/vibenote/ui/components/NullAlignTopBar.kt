@@ -11,7 +11,7 @@ import androidx.compose.ui.draw.alpha
 
 @Composable
 fun NullAlignTopBar() {
-    IconButton(onClick = {}) {
+    IconButton(onClick = {}, enabled = false) {
         Icon(
             imageVector = Icons.Outlined.ChevronLeft,
             contentDescription = "null_align",

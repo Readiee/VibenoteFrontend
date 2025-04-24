@@ -18,7 +18,7 @@ fun SearchTopBar(
 ) {
     BaseTopBar(
         centerContent = {
-            BaseInputField(
+            CompactInputField(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
                 hint = "Поиск",
