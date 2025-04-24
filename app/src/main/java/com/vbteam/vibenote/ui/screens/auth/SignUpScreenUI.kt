@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,17 +53,22 @@ fun SignUpScreenUI(navController: NavHostController) {
 
     ) {
 
-        Image(
+        Icon(
             painter = painterResource(id = R.drawable.logo_ext),
             contentDescription = null,
             modifier = Modifier
                 .width(116.dp)
-                .aspectRatio(1f)
+                .aspectRatio(1f),
+            tint = MaterialTheme.colorScheme.onBackground
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Text(text = "Регистрация", style = MaterialTheme.typography.titleLarge)
+        Text(
+            text = "Регистрация",
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onBackground
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
 

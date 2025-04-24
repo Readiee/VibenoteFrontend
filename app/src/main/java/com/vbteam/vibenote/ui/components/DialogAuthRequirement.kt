@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Login
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.vbteam.vibenote.R
+import com.vbteam.vibenote.ui.theme.LocalAppDimens
 
 @Composable
 fun DialogAuthRequirement(
@@ -34,9 +37,10 @@ fun DialogAuthRequirement(
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.account_circle_24px),
+                Icon(
+                    imageVector = Icons.Outlined.AccountCircle,
                     contentDescription = "Профиль",
+                    tint = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.size(48.dp),
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -48,7 +52,7 @@ fun DialogAuthRequirement(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Авторизуйтесь, чтобы сохранять записи в облако",
+                    text = "Авторизуйтесь, чтобы сохранять записи в облако.",
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center

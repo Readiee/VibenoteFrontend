@@ -35,14 +35,14 @@ fun NoteAnalysisTab(uiState: NoteUiState) {
                 .width(128.dp)
                 .aspectRatio(1f)
         )
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = "Текст не готов к анализу",
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.onBackground,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "Сохраните запись в облако во вкладке «Запись», прежде чем его проанализировать.",
             style = MaterialTheme.typography.labelMedium,
@@ -60,5 +60,6 @@ fun NoteAnalysisTab(uiState: NoteUiState) {
             type = AppButtonType.PRIMARY,
             enabled = uiState.isSyncedWithCloud
         )
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }

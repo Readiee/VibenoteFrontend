@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,17 +50,22 @@ fun SignInScreenUI(navController: NavHostController) {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
+        Icon(
             painter = painterResource(id = R.drawable.logo_ext),
             contentDescription = null,
             modifier = Modifier
                 .width(116.dp)
-                .aspectRatio(1f)
+                .aspectRatio(1f),
+            tint = MaterialTheme.colorScheme.onBackground
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Text(text = "Вход", style = MaterialTheme.typography.titleLarge)
+        Text(
+            text = "Вход",
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onBackground
+        )
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -84,7 +90,7 @@ fun SignInScreenUI(navController: NavHostController) {
         Spacer(modifier = Modifier.height(32.dp))
 
         BaseButton(
-            onClick = {  },
+            onClick = { },
             modifier = Modifier.fillMaxWidth(),
             text = "Войти",
             type = AppButtonType.PRIMARY,
@@ -93,8 +99,17 @@ fun SignInScreenUI(navController: NavHostController) {
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-        Row (modifier = Modifier.fillMaxWidth().padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            HorizontalDivider(color = MaterialTheme.colorScheme.surface, thickness = 1.dp, modifier = Modifier.weight(1f))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.surface,
+                thickness = 1.dp,
+                modifier = Modifier.weight(1f)
+            )
             Row(modifier = Modifier.padding(horizontal = 16.dp)) {
                 Text(
                     "Нет аккаунта?",
@@ -109,7 +124,11 @@ fun SignInScreenUI(navController: NavHostController) {
                     modifier = Modifier.clickable(onClick = { navController.navigate("sign_up") })
                 )
             }
-            HorizontalDivider(color = MaterialTheme.colorScheme.surface, thickness = 1.dp, modifier = Modifier.weight(1f))
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.surface,
+                thickness = 1.dp,
+                modifier = Modifier.weight(1f)
+            )
         }
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -122,11 +141,13 @@ fun SignInScreenUI(navController: NavHostController) {
 //        )
 //        Spacer(modifier = Modifier.height(12.dp))
         BaseButton(
-            onClick = { navController.navigate("notes") {
-                popUpTo("notes") {
-                    inclusive = true
+            onClick = {
+                navController.navigate("notes") {
+                    popUpTo("notes") {
+                        inclusive = true
+                    }
                 }
-            } },
+            },
             modifier = Modifier.fillMaxWidth(),
             text = "Продолжить без аккаунта",
             type = AppButtonType.SECONDARY,

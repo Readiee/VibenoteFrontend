@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Login
+import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.ChevronLeft
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -83,9 +84,10 @@ fun ProfileScreenUI(navController: NavHostController) {
                         .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.account_circle_24px),
+                    Icon(
+                        imageVector = Icons.Outlined.AccountCircle,
                         contentDescription = "Профиль",
+                        tint = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.size(48.dp),
                     )
                     Spacer(modifier = Modifier.height(12.dp))
@@ -94,7 +96,7 @@ fun ProfileScreenUI(navController: NavHostController) {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Авторизуйтесь, чтобы получить больше возможностей приложения",
+                        text = "Авторизуйтесь, чтобы получить больше возможностей приложения.",
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                         textAlign = TextAlign.Center

@@ -12,9 +12,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -35,6 +33,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -66,7 +65,8 @@ import com.vbteam.vibenote.ui.screens.notes.components.NotesDefaultTopBar
 import com.vbteam.vibenote.ui.screens.notes.components.SelectionTopBar
 import com.vbteam.vibenote.ui.theme.LocalAppDimens
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class,
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class,
     ExperimentalFoundationApi::class
 )
 @Composable
@@ -162,14 +162,15 @@ fun NotesScreen(
                         fadeOut(tween(150)) + scaleOut(tween(150))
                     )
                 },
-                label = "FABTransition"
+                label = "FABTransition",
             ) { shouldShowFAB ->
                 if (shouldShowFAB) {
                     FloatingActionButton(
                         onClick = onAddNoteClick,
                         containerColor = MaterialTheme.colorScheme.primary,
                         shape = CircleShape,
-                        modifier = Modifier.size(60.dp)
+                        modifier = Modifier.size(60.dp),
+                        elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.pencil_white),
@@ -315,7 +316,11 @@ fun NotesScreen(
                                                 verticalAlignment = Alignment.CenterVertically,
                                                 modifier = Modifier
                                                     .fillMaxWidth()
-                                                    .padding(start = 12.dp, end = 12.dp, bottom = 12.dp)
+                                                    .padding(
+                                                        start = 12.dp,
+                                                        end = 12.dp,
+                                                        bottom = 12.dp
+                                                    )
                                             ) {
                                                 Text(
                                                     "История",
@@ -354,12 +359,16 @@ fun NotesScreen(
                                         }
                                     },
                                     onLongClick = {
-                                        onNoteSelected(note.id)
-                                        if (uiState.selectedNotes.isEmpty()) {
+                                        if (!uiState.isSearching) {
+                                            onNoteSelected(note.id)
                                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                         }
                                     },
-                                    modifier = Modifier.animateItem(fadeInSpec = null, fadeOutSpec = null, placementSpec = tween(150))
+                                    modifier = Modifier.animateItem(
+                                        fadeInSpec = null,
+                                        fadeOutSpec = null,
+                                        placementSpec = tween(150)
+                                    )
                                 )
                             }
                         }
