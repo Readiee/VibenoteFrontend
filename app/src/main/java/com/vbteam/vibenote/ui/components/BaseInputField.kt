@@ -1,8 +1,8 @@
 package com.vbteam.vibenote.ui.components
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -14,7 +14,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,7 +35,9 @@ fun BaseInputField(
     hint: String = "",
     isPassword: Boolean = false,
     showToggleVisibility: Boolean = false,
-    showClearButton: Boolean = true
+    showClearButton: Boolean = true,
+    isError: Boolean = false,
+    errorMessage: String? = null,
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -73,33 +74,44 @@ fun BaseInputField(
                 }
             }
         }
+
         else -> null
     }
 
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        placeholder = { Text(hint, style = MaterialTheme.typography.labelMedium) },
-        textStyle = MaterialTheme.typography.labelMedium,
-        visualTransformation = visualTransformation,
-        trailingIcon = trailingIcon,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 0.dp)
-            .heightIn(max = 56.dp),
-        shape = RoundedCornerShape(32.dp),
-        colors = TextFieldDefaults.colors(
-            focusedTextColor = MaterialTheme.colorScheme.onBackground,
-            unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
-            cursorColor = MaterialTheme.colorScheme.onBackground,
-            focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedIndicatorColor = Color.Transparent,
-            disabledIndicatorColor = Color.Transparent,
-        ),
-        singleLine = true
-    )
+    Column(modifier = modifier) {
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            isError = isError,
+            placeholder = { Text(hint, style = MaterialTheme.typography.labelMedium) },
+            textStyle = MaterialTheme.typography.bodyMedium,
+            visualTransformation = visualTransformation,
+            trailingIcon = trailingIcon,
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(vertical = 0.dp)
+                .height(56.dp),
+            shape = RoundedCornerShape(32.dp),
+            colors = TextFieldDefaults.colors(
+                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                cursorColor = MaterialTheme.colorScheme.onBackground,
+                focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+            ),
+            singleLine = true
+        )
+        Text(
+            text = if (isError && !errorMessage.isNullOrBlank()) errorMessage else " ",
+            color = if (isError) MaterialTheme.colorScheme.error else Color.Transparent,
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(start = 16.dp, top = 2.dp)
+        )
+    }
 }
+

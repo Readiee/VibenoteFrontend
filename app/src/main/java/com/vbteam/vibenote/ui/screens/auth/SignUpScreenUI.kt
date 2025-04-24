@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.vbteam.vibenote.R
 import com.vbteam.vibenote.ui.components.AppButtonType
@@ -37,6 +38,8 @@ import com.vbteam.vibenote.ui.components.BaseInputField
 
 @Composable
 fun SignUpScreenUI(navController: NavHostController) {
+    val viewModel: AuthViewModel = hiltViewModel()
+
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -73,52 +76,59 @@ fun SignUpScreenUI(navController: NavHostController) {
         Spacer(modifier = Modifier.height(32.dp))
 
         BaseInputField(
-            value = name,
-            onValueChange = { name = it },
+            value = viewModel.name,
+            onValueChange = viewModel::onNameChanged,
             hint = "Имя",
+            isError = viewModel.nameError != null,
+            errorMessage = viewModel.nameError,
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         BaseInputField(
-            value = email,
-            onValueChange = { email = it },
+            value = viewModel.email,
+            onValueChange = viewModel::onEmailChanged,
             hint = "Почта",
+            isError = viewModel.emailError != null,
+            errorMessage = viewModel.emailError,
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         BaseInputField(
-            value = password,
-            onValueChange = { password = it },
+            value = viewModel.password,
+            onValueChange = viewModel::onPasswordChanged,
             hint = "Пароль",
             isPassword = true,
             showToggleVisibility = true,
+            isError = viewModel.passwordError != null,
+            errorMessage = viewModel.passwordError,
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         BaseInputField(
-            value = confirmPassword,
-            onValueChange = { confirmPassword = it },
+            value = viewModel.confirmPassword,
+            onValueChange = viewModel::onConfirmPasswordChanged,
             hint = "Подтвердите пароль",
             isPassword = true,
             showToggleVisibility = true,
+            isError = viewModel.confirmPasswordError != null,
+            errorMessage = viewModel.confirmPasswordError,
             modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
         BaseButton(
-            onClick = { },
+            onClick = { viewModel.onRegisterClick() },
             modifier = Modifier.fillMaxWidth(),
             text = "Зарегистрироваться",
             type = AppButtonType.PRIMARY,
             enabled = true,
-//            icon = Icons.AutoMirrored.Outlined.Login
         )
 
         Spacer(modifier = Modifier.height(16.dp))

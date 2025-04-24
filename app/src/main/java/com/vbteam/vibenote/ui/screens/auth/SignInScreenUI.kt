@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.vbteam.vibenote.R
 import com.vbteam.vibenote.ui.components.AppButtonType
@@ -38,8 +39,7 @@ import com.vbteam.vibenote.ui.components.BaseInputField
 
 @Composable
 fun SignInScreenUI(navController: NavHostController) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    val viewModel: AuthViewModel = hiltViewModel()
 
     Column(
         modifier = Modifier
@@ -70,33 +70,37 @@ fun SignInScreenUI(navController: NavHostController) {
         Spacer(modifier = Modifier.height(32.dp))
 
         BaseInputField(
-            value = email,
-            onValueChange = { email = it },
+            value = viewModel.email,
+            onValueChange = viewModel::onEmailChanged,
             hint = "Почта",
-            modifier = Modifier.fillMaxWidth()
+            isError = viewModel.emailError != null,
+            errorMessage = viewModel.emailError
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         BaseInputField(
-            value = password,
-            onValueChange = { password = it },
+            value = viewModel.password,
+            onValueChange = viewModel::onPasswordChanged,
             hint = "Пароль",
             isPassword = true,
             showToggleVisibility = true,
-            modifier = Modifier.fillMaxWidth()
+            isError = viewModel.passwordError != null,
+            errorMessage = viewModel.passwordError
         )
 
         Spacer(modifier = Modifier.height(32.dp))
 
         BaseButton(
-            onClick = { },
+            onClick = {
+                viewModel.onSignInClick()
+            },
             modifier = Modifier.fillMaxWidth(),
             text = "Войти",
             type = AppButtonType.PRIMARY,
-            enabled = true,
-//            icon = Icons.AutoMirrored.Outlined.Login
+            enabled = true
         )
+
 
         Spacer(modifier = Modifier.height(16.dp))
         Row(
@@ -132,14 +136,6 @@ fun SignInScreenUI(navController: NavHostController) {
         }
         Spacer(modifier = Modifier.height(8.dp))
 
-//        BaseButton(
-//            onClick = { navController.navigate("sign_up") },
-//            modifier = Modifier.fillMaxWidth(),
-//            text = "Зарегистрироваться",
-//            type = AppButtonType.SECONDARY,
-//            enabled = true,
-//        )
-//        Spacer(modifier = Modifier.height(12.dp))
         BaseButton(
             onClick = {
                 navController.navigate("notes") {
