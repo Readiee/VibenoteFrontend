@@ -13,6 +13,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,6 +25,14 @@ class NotesViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(NotesUiState())
     val uiState: StateFlow<NotesUiState> = _uiState.asStateFlow()
+
+    private val _searchHistoryIds = MutableStateFlow<List<String>>(emptyList())
+    val searchHistory: StateFlow<List<Note>> = combine(
+        _searchHistoryIds,
+        _uiState
+    ) { ids, state ->
+        ids.mapNotNull { id -> state.notes.find { it.id == id } }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
     private var notesJob: Job? = null
 
@@ -54,10 +65,6 @@ class NotesViewModel @Inject constructor(
     fun deleteNote(note: Note) {
         viewModelScope.launch {
             notesRepository.deleteNote(note)
-
-            _searchHistory.update { history ->
-                history.filter { it.id != note.id }
-            }
         }
     }
 
@@ -100,18 +107,15 @@ class NotesViewModel @Inject constructor(
         _uiState.update { it.copy(isSearching = false, searchQuery = "") }
     }
 
-    // история поиска
-    private val _searchHistory = MutableStateFlow<List<Note>>(emptyList())
-    val searchHistory: StateFlow<List<Note>> = _searchHistory
-
     fun onNoteClickedFromSearch(note: Note) {
-        if (_searchHistory.value.none { it.id == note.id }) {
-            _searchHistory.update { listOf(note) + it.take(19) } // максимум 20
+        _searchHistoryIds.update { current ->
+            if (note.id in current) current
+            else listOf(note.id) + current.take(19) // максимум 20
         }
     }
 
     fun clearSearchHistory() {
-        _searchHistory.value = emptyList()
+        _searchHistoryIds.value = emptyList()
     }
 
 }

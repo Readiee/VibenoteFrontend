@@ -47,7 +47,7 @@ class NoteViewModel @Inject constructor(
     }
 
     fun updateText(newText: String) {
-        _uiState.value = _uiState.value.copy(text = newText, updatedAt = LocalDateTime.now())
+        _uiState.value = _uiState.value.copy(text = newText, updatedAt = LocalDateTime.now(), isUpdated = true)
     }
 
     fun saveNote(saveToCloud: Boolean = false) {
