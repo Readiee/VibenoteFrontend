@@ -24,7 +24,6 @@ import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -75,7 +74,6 @@ fun NoteScreen(
     }
 
     val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
     var showBottomSheet by remember { mutableStateOf(false) }
     var showDialogSoonFuns by remember { mutableStateOf(false) }
 
@@ -144,15 +142,7 @@ fun NoteScreen(
                                     modifier = Modifier.size(LocalAppDimens.current.iconSizeMedium)
                                 )
                             }
-                            Spacer(modifier = Modifier.width(16.dp))
-                            HorizontalDivider(
-                                modifier = Modifier
-                                    .height(24.dp)
-                                    .width(1.dp),
-                                thickness = 1.dp,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Spacer(modifier = Modifier.width(16.dp))
+                            Spacer(modifier = Modifier.width(32.dp))
 
                             Column {
                                 Text(
@@ -192,7 +182,10 @@ fun NoteScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
+                .padding(
+                    top = padding.calculateTopPadding() + 4.dp,
+                    bottom = padding.calculateBottomPadding() - 20.dp,
+                )
         ) {
 //            TabSwitcher(selectedTabIndex = selectedTab) { tabIndex ->
 //                when (tabIndex) {
