@@ -1,7 +1,9 @@
 package com.vbteam.vibenote.ui.theme
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Typography
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -95,29 +97,50 @@ data class AppDimens(
 val LocalAppDimens = staticCompositionLocalOf { AppDimens() }
 
 @Composable
-fun VibeNoteTheme(content: @Composable () -> Unit) {
-    val lightColors = lightColorScheme(
-        primary = colorResource(id = R.color.accent),  // Accent
-        secondary = colorResource(id = R.color.gray_400),  // Green
+fun VibenoteTheme(content: @Composable () -> Unit) {
+    val colorScheme = if (isSystemInDarkTheme()) {
+        darkColorScheme(
+            primary = colorResource(id = R.color.accent),
+            secondary = colorResource(id = R.color.darkTheme_secondary),
 
-        onPrimary = colorResource(id = R.color.white),
-        onSecondary = colorResource(id = R.color.black),
+            onPrimary = colorResource(id = R.color.white),
+            onSecondary = colorResource(id = R.color.black),
 
-        onSurfaceVariant = colorResource(id = R.color.gray_400),
+            onSurfaceVariant = colorResource(id = R.color.darkTheme_onSurfaceVariant),
 
-        surface = colorResource(id = R.color.light_gray),  // Цвет фона
-        onSurface = colorResource(id = R.color.gray_700),  // Цвет текста на фоне
+            surface = colorResource(id = R.color.darkTheme_surface),
+            onSurface = colorResource(id = R.color.gray_200),
 
-        background = colorResource(id = R.color.white),  // Общий фон
-        onBackground = colorResource(id = R.color.black),  // Текст на фоне
+            background = colorResource(id = R.color.darkTheme_background),
+            onBackground = colorResource(id = R.color.white),
 
-        error = colorResource(id = R.color.red),  // Цвет для ошибок
-    )
+            error = colorResource(id = R.color.red),
+        )
+    } else {
+        lightColorScheme(
+            primary = colorResource(id = R.color.accent),
+            secondary = colorResource(id = R.color.light_gray),
+
+            onPrimary = colorResource(id = R.color.white),
+            onSecondary = colorResource(id = R.color.black),
+
+            onSurfaceVariant = colorResource(id = R.color.gray_400),
+
+            surface = colorResource(id = R.color.light_gray),
+            onSurface = colorResource(id = R.color.gray_700),
+
+            background = colorResource(id = R.color.white),
+            onBackground = colorResource(id = R.color.black),
+
+            error = colorResource(id = R.color.red),
+        )
+    }
+
     CompositionLocalProvider(
         LocalAppDimens provides AppDimens()
     ) {
         MaterialTheme(
-            colorScheme = lightColors,
+            colorScheme = colorScheme,
             typography = typography,
             content = content
         )
