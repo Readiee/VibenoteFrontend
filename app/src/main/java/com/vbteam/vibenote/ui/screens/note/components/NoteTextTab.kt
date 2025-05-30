@@ -1,10 +1,10 @@
 package com.vbteam.vibenote.ui.screens.note.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -25,7 +25,8 @@ import com.vbteam.vibenote.ui.screens.note.NoteUiState
 @Composable
 fun NoteTextTab(
     uiState: NoteUiState,
-    onNoteChanged: (String) -> Unit
+    onNoteChanged: (String) -> Unit,
+    onTryEditNote: () -> Unit
 ) {
     val scrollState = rememberScrollState()
 
@@ -43,11 +44,13 @@ fun NoteTextTab(
         ) {
             Spacer(modifier = Modifier.height(0.dp))
             TextField(
-                value = uiState.text,
+                readOnly = uiState.isAnalyzed,
+                value = uiState.content,
                 onValueChange = onNoteChanged,
                 placeholder = { Text("Текст", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Normal)) },
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxSize()
+                    .weight(1f),
                 textStyle = MaterialTheme.typography.bodyMedium.copy(
                     lineHeight = 22.sp,
                     fontWeight = FontWeight.Normal
@@ -61,7 +64,9 @@ fun NoteTextTab(
                     focusedIndicatorColor = Color.Transparent,
                     disabledIndicatorColor = Color.Transparent,
                     focusedTextColor = MaterialTheme.colorScheme.onBackground,
-                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground
+                    unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                    disabledContainerColor = MaterialTheme.colorScheme.background,
+                    disabledTextColor = MaterialTheme.colorScheme.onBackground
                 )
             )
             Spacer(modifier = Modifier.height(20.dp))

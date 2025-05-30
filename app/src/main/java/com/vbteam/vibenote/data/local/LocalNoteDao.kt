@@ -13,6 +13,9 @@ interface LocalNoteDao {
     @Query("SELECT * FROM notes ORDER BY updatedAt DESC")
     fun getAllNotes(): Flow<List<LocalNoteEntity>>
 
+    @Query("SELECT * FROM notes ORDER BY updatedAt DESC")
+    suspend fun getAllNotesAsList(): List<LocalNoteEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertNote(note: LocalNoteEntity)
 

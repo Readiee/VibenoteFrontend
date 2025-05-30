@@ -8,7 +8,12 @@ data class NotesUiState(
     val notes: List<Note> = emptyList<Note>(),
     val selectedNotes: Set<String> = emptySet(),
     val isLoading: Boolean = true,
+    val isSyncing: Boolean = false,
 
     val isSearching: Boolean = false,
     val searchQuery: String = "",
+
+    // Error states
+    val showLoadError: Boolean = false,
+    val showSyncError: Boolean = false
 )

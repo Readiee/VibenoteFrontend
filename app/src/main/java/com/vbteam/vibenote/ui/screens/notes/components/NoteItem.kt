@@ -48,11 +48,11 @@ fun NoteItem(
                 .padding(vertical = 16.dp, horizontal = 16.dp)
         ) {
             // emoji
-            EmotionAvatar(emotion = note.emotion)
+            EmotionAvatar(emotion = note.getMajorEmotion())
 
             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    text = note.text,
+                    text = note.content,
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.fillMaxWidth(),

@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 
 @Composable
@@ -38,6 +39,7 @@ fun BaseInputField(
     showClearButton: Boolean = true,
     isError: Boolean = false,
     errorMessage: String? = null,
+    enabled: Boolean? = true,
 ) {
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -80,11 +82,12 @@ fun BaseInputField(
 
     Column(modifier = modifier) {
         OutlinedTextField(
+            enabled = enabled == true,
             value = value,
             onValueChange = onValueChange,
             isError = isError,
             placeholder = { Text(hint, style = MaterialTheme.typography.labelMedium) },
-            textStyle = MaterialTheme.typography.bodyMedium,
+            textStyle = MaterialTheme.typography.bodyMedium.copy(fontSize = 15.sp),
             visualTransformation = visualTransformation,
             trailingIcon = trailingIcon,
             modifier = modifier

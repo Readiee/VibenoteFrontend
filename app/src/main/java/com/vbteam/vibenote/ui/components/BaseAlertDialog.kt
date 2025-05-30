@@ -1,9 +1,7 @@
 package com.vbteam.vibenote.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
@@ -14,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BaseAlertDialog(
@@ -23,14 +22,14 @@ fun BaseAlertDialog(
     confirmButtonType: AppButtonType,
     dismissButtonText: String,
     text: String,
-    titleText: String
+    title: String
 ) {
     AlertDialog(
         containerColor = MaterialTheme.colorScheme.background,
         onDismissRequest = onDismiss,
         title = {
             Text(
-                text = titleText,
+                text = title,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -44,15 +43,17 @@ fun BaseAlertDialog(
         },
         dismissButton = {
             Row () {
-                BaseButton(
-                    text = dismissButtonText,
-                    onClick = onDismiss,
-                    type = AppButtonType.SECONDARY,
-                    modifier = Modifier
-                        .height(48.dp)
-                        .weight(1f)
-                )
-                Spacer(Modifier.width(8.dp))
+                if (dismissButtonText.isNotBlank()) {
+                    BaseButton(
+                        text = dismissButtonText,
+                        onClick = onDismiss,
+                        type = AppButtonType.SECONDARY,
+                        modifier = Modifier
+                            .height(48.dp)
+                            .weight(1f)
+                    )
+                    Spacer(Modifier.width(8.dp))
+                }
                 BaseButton(
                     type = confirmButtonType,
                     text = confirmButtonText,

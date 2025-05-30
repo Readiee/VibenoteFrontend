@@ -97,7 +97,7 @@ data class AppDimens(
 val LocalAppDimens = staticCompositionLocalOf { AppDimens() }
 
 @Composable
-fun VibenoteTheme(content: @Composable () -> Unit) {
+fun VibeNoteTheme(content: @Composable () -> Unit) {
     val colorScheme = if (isSystemInDarkTheme()) {
         darkColorScheme(
             primary = colorResource(id = R.color.accent),

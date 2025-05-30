@@ -1,6 +1,6 @@
 package com.vbteam.vibenote.ui.screens.notes
 
-import androidx.compose.runtime.mutableStateListOf
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vbteam.vibenote.data.repository.NotesRepository
@@ -37,17 +37,64 @@ class NotesViewModel @Inject constructor(
     private var notesJob: Job? = null
 
     init {
+        Log.d("NotesViewModel", "Initializing NotesViewModel")
         loadNotes()
     }
 
     fun loadNotes() {
-        _uiState.update { it.copy(isLoading = true) }
-        notesJob?.cancel()
-        notesJob = viewModelScope.launch {
-            notesRepository.getAllNotes().collect { notes ->
-                _uiState.update {
-                    it.copy(notes = notes, isLoading = false)
+        Log.d("NotesViewModel", "Starting to load notes")
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isLoading = true) }
+                Log.d("NotesViewModel", "Loading local notes...")
+                
+                // Запускаем сбор данных из Flow в отдельной корутине
+                viewModelScope.launch {
+                    notesRepository.getAllNotes()
+                        .collect { notes ->
+                            Log.d("NotesViewModel", "Received ${notes.size} notes from local DB")
+                            _uiState.update { state ->
+                                state.copy(
+                                    notes = notes,
+                                    isLoading = false
+                                )
+                            }
+                        }
                 }
+                
+                // Загружаем недостающие заметки из облака
+                try {
+                    Log.d("NotesViewModel", "Loading missing notes from cloud...")
+                    notesRepository.loadMissingNotesFromCloud()
+                    Log.d("NotesViewModel", "Successfully loaded missing notes from cloud")
+                } catch (e: Exception) {
+                    Log.e("NotesViewModel", "Failed to load missing notes", e)
+                }
+                
+                // Синхронизируем с облаком (только загрузка)
+                Log.d("NotesViewModel", "Starting cloud sync...")
+                syncWithCloud()
+            } catch (e: Exception) {
+                Log.e("NotesViewModel", "Failed to load notes", e)
+                _uiState.update { it.copy(
+                    isLoading = false,
+                    showLoadError = true
+                ) }
+            }
+        }
+    }
+
+    fun syncWithCloud() {
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isSyncing = true) }
+                notesRepository.syncWithCloud()
+                _uiState.update { it.copy(showSyncError = false) }
+            } catch (e: Exception) {
+                Log.e("NotesViewModel", "Failed to sync with cloud", e)
+                _uiState.update { it.copy(showSyncError = true) }
+            } finally {
+                _uiState.update { it.copy(isSyncing = false) }
             }
         }
     }
@@ -58,7 +105,7 @@ class NotesViewModel @Inject constructor(
 
     fun addNote(note: Note) {
         viewModelScope.launch {
-            notesRepository.addNote(note)
+            notesRepository.createNoteLocally(note.content)
         }
     }
 
@@ -118,4 +165,11 @@ class NotesViewModel @Inject constructor(
         _searchHistoryIds.value = emptyList()
     }
 
+    fun dismissLoadError() {
+        _uiState.update { it.copy(showLoadError = false) }
+    }
+
+    fun dismissSyncError() {
+        _uiState.update { it.copy(showSyncError = false) }
+    }
 }

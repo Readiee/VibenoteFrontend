@@ -70,7 +70,7 @@ import com.vbteam.vibenote.ui.theme.LocalAppDimens
     ExperimentalFoundationApi::class
 )
 @Composable
-fun NotesScreen(
+fun NotesScreenUI(
     navController: NavHostController,
     uiState: NotesUiState,
     onFilterSelected: (Emotion) -> Unit,
@@ -82,6 +82,7 @@ fun NotesScreen(
     onSearchClose: () -> Unit,
     onSearchQueryChange: (String) -> Unit,
     onSearchClicked: () -> Unit,
+    onSyncWithCloud: () -> Unit,
     searchHistory: List<Note>,
     clearSearchHistory: () -> Unit
 ) {
@@ -95,6 +96,7 @@ fun NotesScreen(
 
     var showDialogDeleteSelected by remember { mutableStateOf(false) }
     var showDialogСlearSearchHistory by remember { mutableStateOf(false) }
+
 
     Scaffold(
         topBar = {
@@ -129,7 +131,9 @@ fun NotesScreen(
                             NotesDefaultTopBar(
                                 onProfileClick = { navController.navigate("profile") },
                                 onSearchClick = onSearchClicked,
-                                hasNotes = uiState.notes.isNotEmpty()
+                                hasNotes = uiState.notes.isNotEmpty(),
+                                onSyncClick = if (!uiState.isSyncing) onSyncWithCloud else null,
+                                isSyncing = uiState.isSyncing
                             )
                         }
                     }
@@ -220,7 +224,7 @@ fun NotesScreen(
                     val filteredNotes = when {
                         uiState.isSearching && uiState.searchQuery.isNotBlank() -> {
                             uiState.notes.filter {
-                                it.text.contains(
+                                it.content.contains(
                                     uiState.searchQuery,
                                     ignoreCase = true
                                 )
@@ -237,6 +241,7 @@ fun NotesScreen(
                     }
 
                     when {
+                        /*
                         uiState.isLoading -> {
                             item {
                                 AnimatedContent(
@@ -259,6 +264,7 @@ fun NotesScreen(
                                 }
                             }
                         }
+                        */
 
                         uiState.notes.isEmpty() -> {
                             item {
@@ -389,7 +395,7 @@ fun NotesScreen(
             confirmButtonText = "Удалить",
             dismissButtonText = "Отмена",
             confirmButtonType = AppButtonType.ERROR,
-            titleText = "Удалить записи",
+            title = "Удалить записи",
             text = "Вы уверены, что хотите удалить выбранные записи? Это действие невозможно отменить.",
         )
     }
@@ -404,7 +410,7 @@ fun NotesScreen(
             confirmButtonText = "Очистить",
             dismissButtonText = "Отмена",
             confirmButtonType = AppButtonType.ERROR,
-            titleText = "Очистить историю поиска",
+            title = "Очистить историю поиска",
             text = "Очистить историю поиска?",
         )
     }

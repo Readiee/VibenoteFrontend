@@ -14,12 +14,12 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun BaseCard (modifier: Modifier = Modifier, content: @Composable (ColumnScope.() -> Unit)) {
     Card(
-        shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(
+        shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.onBackground
         ),
         modifier = modifier
-            .padding(16.dp)
+            .padding(horizontal =  16.dp, vertical = 20.dp)
             .fillMaxWidth(),
         content = content
     )

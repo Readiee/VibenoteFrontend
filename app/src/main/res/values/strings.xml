@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Vibenote</string>
+    <string name="app_name">VibeNote</string>
     <string name="empty_notes_title">Создайте первую запись!</string>
     <string name="empty_notes_description">Нажмите на кнопку в правом нижнем углу, чтобы создать запись.</string>
 </resources>

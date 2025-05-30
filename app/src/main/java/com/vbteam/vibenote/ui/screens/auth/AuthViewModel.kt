@@ -1,15 +1,28 @@
 package com.vbteam.vibenote.ui.screens.auth
 
+import android.util.Log
 import android.util.Patterns
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.vbteam.vibenote.data.auth.AuthManager
+import com.vbteam.vibenote.data.remote.AuthenticatedApiService
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AuthViewModel @Inject constructor() : ViewModel() {
+class AuthViewModel @Inject constructor(
+    private val authManager: AuthManager,
+    private val authenticatedApiService: AuthenticatedApiService
+) : ViewModel() {
+
+    private val _uiState = MutableStateFlow(AuthUiState())
+    val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
+
     var name by mutableStateOf("")
     var email by mutableStateOf("")
     var password by mutableStateOf("")
@@ -19,6 +32,20 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     var emailError by mutableStateOf<String?>(null)
     var passwordError by mutableStateOf<String?>(null)
     var confirmPasswordError by mutableStateOf<String?>(null)
+
+    init {
+        viewModelScope.launch {
+            authManager.currentUser
+                .collect { user ->
+                    _uiState.update { 
+                        it.copy(
+                            isAuthenticated = user != null,
+                            currentUser = user
+                        )
+                    }
+                }
+        }
+    }
 
     fun onEmailChanged(newEmail: String) {
         email = newEmail
@@ -81,10 +108,128 @@ class AuthViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onSignInClick(): Boolean {
-        return validateSignIn()
+        if (!validateSignIn()) return false
+        
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isLoading = true) }
+                login(email, password)
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Sign in failed", e)
+                _uiState.update { it.copy(error = "Failed to sign in: ${e.message}") }
+            }
+        }
+        return true
     }
 
     fun onRegisterClick(): Boolean {
-        return validateSignUp()
+        if (!validateSignUp()) return false
+        
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isLoading = true) }
+                register(name, email, password)
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Registration failed", e)
+                _uiState.update { it.copy(error = "Failed to register: ${e.message}") }
+            }
+        }
+        return true
+    }
+
+    fun login(login: String, password: String) {
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isLoading = true) }
+                val result = authManager.login(login, password)
+                result.fold(
+                    onSuccess = { user ->
+                        _uiState.update { 
+                            it.copy(
+                                isAuthenticated = true,
+                                currentUser = user,
+                                error = null
+                            )
+                        }
+                    },
+                    onFailure = { e ->
+                        Log.e("AuthViewModel", "Login failed", e)
+                        _uiState.update { 
+                            it.copy(error = "Failed to login: ${e.message}")
+                        }
+                    }
+                )
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Login failed", e)
+                _uiState.update { 
+                    it.copy(error = "Failed to login: ${e.message}")
+                }
+            } finally {
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    fun register(username: String, login: String, password: String) {
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isLoading = true) }
+
+                val result = authManager.register(username, login, password)
+
+                result.fold(
+                    onSuccess = { user ->
+                        _uiState.update { 
+                            it.copy(
+                                isAuthenticated = true,
+                                currentUser = user,
+                                error = null
+                            )
+                        }
+                    },
+                    onFailure = { e ->
+                        Log.e("AuthViewModel", "Registration failed", e)
+                        _uiState.update { 
+                            it.copy(error = "Failed to register: ${e.message}")
+                        }
+                    }
+                )
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Registration failed", e)
+                _uiState.update { 
+                    it.copy(error = "Failed to register: ${e.message}")
+                }
+            } finally {
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            try {
+                _uiState.update { it.copy(isLoading = true) }
+                authenticatedApiService.logout()
+                authManager.clearAuthData()
+                _uiState.update { 
+                    it.copy(
+                        isAuthenticated = false,
+                        currentUser = null,
+                        error = null
+                    )
+                }
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Logout failed", e)
+                _uiState.update { 
+                    it.copy(error = "Failed to logout: ${e.message}")
+                }
+            } finally {
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+    fun clearError() {
+        _uiState.update { it.copy(error = null) }
     }
 }

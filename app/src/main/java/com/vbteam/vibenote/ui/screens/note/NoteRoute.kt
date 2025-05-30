@@ -17,30 +17,9 @@ fun NoteRoute(
         viewModel.loadNote(noteId)
     }
 
-    val uiState by viewModel.uiState.collectAsState()
-    val isLoggedIn = false // пока тут и пока false
-
-    NoteScreen(
+    NoteScreenUI(
         navController = navController,
-        uiState = uiState,
-        onBack = {
-            if(uiState.isUpdated) viewModel.saveNote()
-            navController.popBackStack()
-        },
-        onSaveButtonClicked = {
-            if (isLoggedIn) {
-                viewModel.saveNote(saveToCloud = true)
-            } else {
-                viewModel.showAuthRequiredDialog() // какой-то треш 2
-            }
-        },
-        onNoteChanged = { viewModel.updateText(it) }, // какой-то треш 1
-        onDismissAuthDialog = { viewModel.dismissAuthRequiredDialog() },
-        onConfirmationAuthDialog = {
-            viewModel.saveNote()
-            viewModel.dismissAuthRequiredDialog()
-            navController.navigate("sign_in")
-        }
+        viewModel = viewModel
     )
 }
 

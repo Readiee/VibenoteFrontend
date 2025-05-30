@@ -5,7 +5,12 @@ import androidx.room.Room
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.vbteam.vibenote.data.local.AppDatabase
 import com.vbteam.vibenote.data.local.LocalNoteDao
+import com.vbteam.vibenote.data.local.MIGRATION_1_2
+import com.vbteam.vibenote.data.local.MIGRATION_2_3
+import com.vbteam.vibenote.data.local.MIGRATION_3_4
 import com.vbteam.vibenote.data.remote.CloudService
+import com.vbteam.vibenote.data.remote.api.AuthApi
+import com.vbteam.vibenote.data.remote.api.EntryApi
 import com.vbteam.vibenote.data.repository.NotesRepository
 import dagger.Module
 import dagger.Provides
@@ -28,7 +33,9 @@ object AppModule {
             context,
             AppDatabase::class.java,
             "app_db"
-        ).build()
+        )
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+        .build()
     }
 
     @Provides
@@ -40,7 +47,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideCloudService(): CloudService {
-        return CloudService()
+    fun provideCloudService(authApi: AuthApi, entryApi: EntryApi): CloudService {
+        return CloudService(authApi, entryApi)
     }
 }

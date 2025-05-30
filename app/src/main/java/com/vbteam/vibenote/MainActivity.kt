@@ -9,7 +9,7 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
 import com.vbteam.vibenote.navigation.NavGraph
-import com.vbteam.vibenote.ui.theme.VibenoteTheme
+import com.vbteam.vibenote.ui.theme.VibeNoteTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         setContent {
-            VibenoteTheme {
+            VibeNoteTheme {
                 val navController = rememberNavController()
                 NavGraph(navController)
             }

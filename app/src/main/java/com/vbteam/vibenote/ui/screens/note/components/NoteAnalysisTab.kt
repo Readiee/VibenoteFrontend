@@ -1,65 +1,169 @@
 package com.vbteam.vibenote.ui.screens.note.components
 
+import android.util.Log
+import android.widget.Space
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.vbteam.vibenote.ui.screens.note.NoteUiState
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.sp
 import com.vbteam.vibenote.R
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import com.vbteam.vibenote.data.model.Tag
 import com.vbteam.vibenote.ui.components.AppButtonType
 import com.vbteam.vibenote.ui.components.BaseButton
+import com.vbteam.vibenote.ui.components.BaseCard
+import com.vbteam.vibenote.ui.screens.note.NoteUiState
+import com.vbteam.vibenote.ui.screens.note.SyncState
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun NoteAnalysisTab(uiState: NoteUiState) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(16.dp)
-    ) {
-        Spacer(modifier = Modifier.height(24.dp))
-        Image(
-            painter = painterResource(id = R.drawable.illustration_cross),
-            contentDescription = null,
-            modifier = Modifier
-                .width(128.dp)
-                .aspectRatio(1f)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Текст не готов к анализу",
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onBackground,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(
-            text = "Сохраните запись в облако во вкладке «Запись», прежде чем его проанализировать.",
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center
-        )
+fun NoteAnalysisTab(uiState: NoteUiState, onAnalyzeClicked: () -> Unit) {
+    val isSynced = uiState.syncState is SyncState.Synced
 
-        Spacer(modifier = Modifier.weight(1f))
+    Log.d("NoteAnalysisTab", "State: isAnalyzed=${uiState.isAnalyzed}, tags=${uiState.tags}, analysis=${uiState.analysis}")
 
-        BaseButton(
-            onClick = { /* handle click */ },
-            modifier = Modifier
-                .fillMaxWidth(),
-            text = "Анализировать запись",
-            type = AppButtonType.PRIMARY,
-            enabled = uiState.isSyncedWithCloud
-        )
-        Spacer(modifier = Modifier.height(20.dp))
+    // -- 1. Если запись еще не проанализирована --
+    if (!uiState.isAnalyzed) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Spacer(modifier = Modifier.height(40.dp))
+
+            Image(
+                painter = painterResource(id = if (isSynced) R.drawable.illustration_ok else R.drawable.illustration_cross),
+                contentDescription = null,
+                modifier = Modifier
+                    .width(128.dp)
+                    .aspectRatio(1f)
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = if (isSynced) "Текст готов к анализу" else "Текст не готов к анализу",
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onBackground,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = if (isSynced) 
+                    "Нажмите на кнопку «Анализировать запись», чтобы получить рекомендации." 
+                else 
+                    "Сохраните запись в облако во вкладке «Запись», прежде чем его проанализировать.",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            BaseButton(
+                onClick = onAnalyzeClicked,
+                modifier = Modifier.fillMaxWidth(),
+                text = "Анализировать запись",
+                type = AppButtonType.PRIMARY,
+                enabled = isSynced
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+        }
+    }
+    // -- 2. Если запись уже проанализирована --
+    else {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Spacer(modifier = Modifier.height(4.dp))
+            // 2.1. Эмоции
+            BaseCard(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .border(
+                        BorderStroke(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.surface
+                        ), 
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .clip(RoundedCornerShape(16.dp))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(text = "Эмоции", style = MaterialTheme.typography.titleSmall)
+
+                    FlowRow(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        maxItemsInEachRow = 3,
+                    ) {
+                        Log.d("NoteAnalysisTab", "Rendering tags: ${uiState.tags}")
+                        uiState.tags.forEach { tag ->
+                            val emotion = tag.convertToEmotion()
+                            Log.d("NoteAnalysisTab", "Tag: $tag -> Emotion: $emotion")
+                            EmotionTag(
+                                tag = tag,
+                                emotion = emotion,
+                                modifier = Modifier.weight(1f, fill = false)
+                            )
+                        }
+                    }
+                }
+            }
+            // 2.2 Рекомендации
+            BaseCard(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .border(
+                        BorderStroke(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.surface
+                        ), 
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    .clip(RoundedCornerShape(16.dp))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(text = "Рекомендации", style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        text = uiState.analysis?.result ?: "Реккомендаций нет.",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            lineHeight = 22.sp,
+                            fontWeight = FontWeight.Normal
+                        )
+                    )
+                }
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.vbteam.vibenote.ui.screens.notes
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
@@ -11,14 +12,14 @@ fun NotesRoute(
     navController: NavHostController,
     viewModel: NotesViewModel = hiltViewModel()
 ) {
-//    LaunchedEffect(Unit) {
-//        viewModel.loadNotes()
-//    }
+    LaunchedEffect(Unit) {
+        viewModel.loadNotes()
+    }
 
     val uiState by viewModel.uiState.collectAsState()
     val searchHistory by viewModel.searchHistory.collectAsState()
 
-    NotesScreen(
+    NotesScreenUI(
         navController = navController,
         uiState = uiState,
         onFilterSelected = { viewModel.onFilterSelected(it) },
@@ -39,6 +40,7 @@ fun NotesRoute(
         onSearchClose = { viewModel.onSearchClose() },
         onSearchQueryChange = { viewModel.onSearchQueryChanged(it) },
         onSearchClicked = { viewModel.onSearchClicked() },
+        onSyncWithCloud = { viewModel.syncWithCloud() },
         searchHistory = searchHistory,
         clearSearchHistory = { viewModel.clearSearchHistory() }
     )
