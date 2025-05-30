@@ -72,7 +72,10 @@ class NoteViewModel @Inject constructor(
                 content = newContent,
                 title = newContent.take(30),
                 updatedAt = LocalDateTime.now(),
-                syncState = SyncState.NotSynced
+                syncState = if (currentState.cloudId != null) 
+                    SyncState.UnsyncedChanges 
+                else 
+                    SyncState.NotSynced
             )
         }
     }
@@ -201,7 +204,11 @@ class NoteViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         cloudId = note.cloudId,
-                        syncState = if (note.isSyncedWithCloud) SyncState.Synced else SyncState.NotSynced
+                        syncState = when {
+                            note.isSyncedWithCloud -> SyncState.Synced
+                            note.cloudId != null -> SyncState.UnsyncedChanges
+                            else -> SyncState.NotSynced
+                        }
                     )
                 }
             }
@@ -222,7 +229,11 @@ class NoteViewModel @Inject constructor(
                 content = note.content,
                 title = note.content.take(30),
                 tags = note.tags,
-                syncState = if (note.isSyncedWithCloud) SyncState.Synced else SyncState.NotSynced,
+                syncState = when {
+                    note.isSyncedWithCloud -> SyncState.Synced
+                    note.cloudId != null -> SyncState.UnsyncedChanges
+                    else -> SyncState.NotSynced
+                },
                 isAnalyzed = note.isAnalyzed,
                 analysis = note.analysis,
                 createdAt = note.createdAt,

@@ -101,7 +101,7 @@ fun NoteScreenUI(
 
                 is UiMessage.NoEdit -> snackbarHostState.showCustomSnackbar(
                     title = "Редактирование невозможно",
-                    message = "Эта заметка уже проанализрована и не может быть изменена",
+                    message = "Эта запись уже проанализрована и не может быть изменена",
                     type = SnackbarType.WARNING
                 )
 
@@ -213,6 +213,7 @@ fun NoteScreenUI(
                                         is SyncState.Synced -> "Сохранено в облако"
                                         is SyncState.SyncInProgress -> "Синхронизация..."
                                         is SyncState.NotSynced -> "Черновик"
+                                        is SyncState.UnsyncedChanges -> "Не синхронизировано"
                                     },
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant

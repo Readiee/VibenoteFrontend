@@ -34,9 +34,10 @@ enum class LoadingState {
 }
 
 sealed class SyncState {
-    data object NotSynced : SyncState()
-    data object Synced : SyncState()
-    data object SyncInProgress : SyncState()
+    data object NotSynced : SyncState()        // Черновик - только локально
+    data object Synced : SyncState()           // Синхронизировано с облаком
+    data object SyncInProgress : SyncState()   // Идет синхронизация
+    data object UnsyncedChanges : SyncState()  // Есть в облаке, но есть несинхронизированные изменения
 }
 
 sealed class UiMessage {

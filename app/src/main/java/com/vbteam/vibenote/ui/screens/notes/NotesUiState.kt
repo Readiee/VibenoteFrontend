@@ -15,5 +15,6 @@ data class NotesUiState(
 
     // Error states
     val showLoadError: Boolean = false,
-    val showSyncError: Boolean = false
+    val showSyncError: Boolean = false,
+    val showDeleteError: Boolean = false
 )

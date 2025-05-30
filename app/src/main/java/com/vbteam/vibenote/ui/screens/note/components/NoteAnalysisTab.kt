@@ -1,7 +1,6 @@
 package com.vbteam.vibenote.ui.screens.note.components
 
 import android.util.Log
-import android.widget.Space
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -19,6 +18,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,8 +31,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vbteam.vibenote.R
-import com.vbteam.vibenote.data.model.Tag
 import com.vbteam.vibenote.ui.components.AppButtonType
+import com.vbteam.vibenote.ui.components.BaseAlertDialog
 import com.vbteam.vibenote.ui.components.BaseButton
 import com.vbteam.vibenote.ui.components.BaseCard
 import com.vbteam.vibenote.ui.screens.note.NoteUiState
@@ -39,6 +42,22 @@ import com.vbteam.vibenote.ui.screens.note.SyncState
 @Composable
 fun NoteAnalysisTab(uiState: NoteUiState, onAnalyzeClicked: () -> Unit) {
     val isSynced = uiState.syncState is SyncState.Synced
+    var showConfirmDialog by remember { mutableStateOf(false) }
+
+    if (showConfirmDialog) {
+        BaseAlertDialog(
+            onDismiss = { showConfirmDialog = false },
+            onConfirmation = {
+                showConfirmDialog = false
+                onAnalyzeClicked()
+            },
+            confirmButtonText = "Анализ",
+            confirmButtonType = AppButtonType.PRIMARY,
+            dismissButtonText = "Отмена",
+            text = "После анализа запись нельзя будет редактировать. Вы уверены, что хотите продолжить?",
+            title = "Анализ записи"
+        )
+    }
 
     Log.d("NoteAnalysisTab", "State: isAnalyzed=${uiState.isAnalyzed}, tags=${uiState.tags}, analysis=${uiState.analysis}")
 
@@ -78,7 +97,7 @@ fun NoteAnalysisTab(uiState: NoteUiState, onAnalyzeClicked: () -> Unit) {
             Spacer(modifier = Modifier.weight(1f))
 
             BaseButton(
-                onClick = onAnalyzeClicked,
+                onClick = { showConfirmDialog = true },
                 modifier = Modifier.fillMaxWidth(),
                 text = "Анализировать запись",
                 type = AppButtonType.PRIMARY,
