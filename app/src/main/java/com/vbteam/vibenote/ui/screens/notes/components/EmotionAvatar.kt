@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -38,13 +40,16 @@ fun EmotionAvatar(
                 Icon(
                     painter = painterResource(id = it),
                     contentDescription = "Emotion: $emotion",
-                    modifier = Modifier.size(LocalAppDimens.current.iconSizeMedium)
+                    modifier = Modifier.size(LocalAppDimens.current.iconSizeMedium),
+                    tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
                 )
             else
                 Image(
                     painter = painterResource(id = it),
                     contentDescription = "Emotion: $emotion",
-                    modifier = Modifier.size(LocalAppDimens.current.iconSizeMedium)
+                    modifier = Modifier
+                        .size(LocalAppDimens.current.iconSizeMedium)
+                        .alpha(0.3f)
                 )
         }
     }

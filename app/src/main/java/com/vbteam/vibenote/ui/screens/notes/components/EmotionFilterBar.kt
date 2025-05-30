@@ -36,7 +36,7 @@ fun EmotionFilterBar(
                     iconColor = MaterialTheme.colorScheme.onBackground,
                     labelColor = MaterialTheme.colorScheme.onSurface,
                     selectedContainerColor = MaterialTheme.colorScheme.primary,
-                    selectedLabelColor = Color.White,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 border = null,
                 selected = selectedFilter == filter,
@@ -52,7 +52,11 @@ fun EmotionFilterBar(
                         Icon(
                             painter = painterResource(id = iconRes),
                             contentDescription = "Emotion: $filter",
-                            modifier = Modifier.size(LocalAppDimens.current.iconSizeSmall)
+                            modifier = Modifier.size(LocalAppDimens.current.iconSizeSmall),
+                            tint = if (selectedFilter == filter) 
+                                MaterialTheme.colorScheme.onPrimary.copy(alpha = 1f)
+                            else 
+                                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                         )
                     }
                 },
