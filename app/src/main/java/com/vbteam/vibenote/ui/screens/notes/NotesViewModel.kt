@@ -111,7 +111,12 @@ class NotesViewModel @Inject constructor(
 
     fun deleteNote(note: Note) {
         viewModelScope.launch {
-            notesRepository.deleteNote(note)
+            try {
+                notesRepository.deleteNote(note)
+            } catch (e: Exception) {
+                Log.e("NotesViewModel", "Failed to delete note", e)
+                _uiState.update { it.copy(showDeleteError = true) }
+            }
         }
     }
 

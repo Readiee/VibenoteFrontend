@@ -16,6 +16,9 @@ interface EntryApi {
     @PUT(ApiConfig.Endpoints.ENTRY)
     suspend fun updateEntry(@Path("id") id: String, @Body request: UpdateEntryRequest): EntryResponse
 
+    @DELETE(ApiConfig.Endpoints.ENTRY)
+    suspend fun deleteEntry(@Path("id") id: String)
+
     @POST(ApiConfig.Endpoints.ANALYSIS)
     suspend fun analyzeEntry(@Path("entryId") entryId: String): AnalysisResponse
 } 

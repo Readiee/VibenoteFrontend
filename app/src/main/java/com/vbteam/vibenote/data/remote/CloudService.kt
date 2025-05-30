@@ -66,6 +66,12 @@ class CloudService @Inject constructor(
         }
     }
 
+    suspend fun deleteNoteFromCloud(cloudId: String) {
+        handleApiCall("delete note") {
+            entryApi.deleteEntry(cloudId)
+        }
+    }
+
     private fun mapToNote(response: EntryResponse, localId: String?): Note {
         return Note(
             id = localId ?: response.id,

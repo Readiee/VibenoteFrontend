@@ -59,8 +59,25 @@ class NotesRepository @Inject constructor(
     }
 
     suspend fun deleteNote(note: Note) {
-        localNoteDao.deleteNote(note.toEntity())
-        noteCache.remove(note.id)
+        try {
+            // Если есть cloudId, сначала удаляем из облака
+            if (note.cloudId != null) {
+                try {
+                    cloudService.deleteNoteFromCloud(note.cloudId)
+                } catch (e: Exception) {
+                    Log.e("NotesRepository", "Failed to delete note from cloud", e)
+                    throw e
+                }
+            }
+
+            // Затем удаляем локально
+            localNoteDao.deleteNote(note.toEntity())
+            noteCache.remove(note.id)
+            Log.d("NotesRepository", "Note deleted successfully: ${note.id}")
+        } catch (e: Exception) {
+            Log.e("NotesRepository", "Failed to delete note", e)
+            throw e
+        }
     }
 
     suspend fun checkNoteAnalysis(noteId: String): Analysis? {
