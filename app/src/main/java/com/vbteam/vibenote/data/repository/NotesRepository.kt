@@ -8,6 +8,9 @@ import com.vbteam.vibenote.data.model.Analysis
 import com.vbteam.vibenote.data.model.Note
 import com.vbteam.vibenote.data.model.Tag
 import com.vbteam.vibenote.data.remote.CloudService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -26,13 +29,24 @@ class NotesRepository @Inject constructor(
 
     suspend fun getNoteById(noteId: String): Note? {
         noteCache[noteId]?.let { return it }
-        
-        val localNote = localNoteDao.getNoteById(noteId)?.toDomain()
-        if (localNote == null) return null
 
-        val updatedNote = updateSyncStatusIfNeeded(localNote)
-        noteCache[noteId] = updatedNote
-        return updatedNote
+        val localNote = localNoteDao.getNoteById(noteId)?.toDomain()
+        if (localNote != null) {
+            noteCache[noteId] = localNote
+            // Запускаем обновление статуса синхронизации в фоновом режиме, не дожидаясь его
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val updatedNote = updateSyncStatusIfNeeded(localNote)
+                    if (updatedNote != localNote) {
+                        saveLocally(updatedNote)
+                    }
+                } catch (e: Exception) {
+                    Log.e("NotesRepository", "Failed to update sync status in background", e)
+                }
+            }
+        }
+
+        return localNote
     }
 
     suspend fun createNoteLocally(content: String): Note {
@@ -46,7 +60,11 @@ class NotesRepository @Inject constructor(
             // сохраняем в облако
             saveToCloud -> {
                 val cloudNote = saveToCloud(note)
-                cloudNote?.let { saveLocally(it) }
+                if (cloudNote != null) {
+                    saveLocally(cloudNote)
+                } else {
+                    throw Exception("Failed to save note to cloud")
+                }
             }
             // Если локальное сохранение заметки, которая уже была в облаке
             note.cloudId != null -> {
@@ -60,7 +78,12 @@ class NotesRepository @Inject constructor(
 
     suspend fun deleteNote(note: Note) {
         try {
-            // Если есть cloudId, сначала удаляем из облака
+            // Удаляем локально
+            localNoteDao.deleteNote(note.toEntity())
+            noteCache.remove(note.id)
+            Log.d("NotesRepository", "Note deleted successfully: ${note.id}")
+
+            // Если есть cloudId, удаляем из облака
             if (note.cloudId != null) {
                 try {
                     cloudService.deleteNoteFromCloud(note.cloudId)
@@ -70,10 +93,6 @@ class NotesRepository @Inject constructor(
                 }
             }
 
-            // Затем удаляем локально
-            localNoteDao.deleteNote(note.toEntity())
-            noteCache.remove(note.id)
-            Log.d("NotesRepository", "Note deleted successfully: ${note.id}")
         } catch (e: Exception) {
             Log.e("NotesRepository", "Failed to delete note", e)
             throw e
@@ -82,13 +101,13 @@ class NotesRepository @Inject constructor(
 
     suspend fun checkNoteAnalysis(noteId: String): Analysis? {
         val note = getNoteById(noteId) ?: throw IllegalArgumentException("Note not found")
-        
+
         if (!note.isSyncedWithCloud) {
             throw IllegalStateException("Cannot check analysis for note that is not synced with cloud")
         }
 
         val cloudId = note.cloudId ?: throw IllegalStateException("Note has no cloud ID")
-        
+
         // Получаем существующий анализ из облака
         try {
             val cloudNote = cloudService.getNoteFromCloud(cloudId)
@@ -109,19 +128,19 @@ class NotesRepository @Inject constructor(
         } catch (e: Exception) {
             Log.e("NotesRepository", "Failed to get note from cloud", e)
         }
-        
+
         return null
     }
 
     suspend fun requestNoteAnalysis(noteId: String): Analysis? {
         val note = getNoteById(noteId) ?: throw IllegalArgumentException("Note not found")
-        
+
         if (!note.isSyncedWithCloud) {
             throw IllegalStateException("Cannot analyze note that is not synced with cloud")
         }
 
         val cloudId = note.cloudId ?: throw IllegalStateException("Note has no cloud ID")
-        
+
         Log.d("NotesRepository", "Requesting new analysis for note $cloudId")
         return cloudService.analyzeNote(cloudId)?.also { analysis ->
             val updatedNote = note.copy(
@@ -141,7 +160,7 @@ class NotesRepository @Inject constructor(
         try {
             val cloudNotes = cloudService.syncNotes()
             val localNotes = localNoteDao.getAllNotesAsList().map { it.toDomain() }
-            
+
             // Обработка облачных заметок: загрузка в локальное хранилище
             processCloudNotes(cloudNotes, localNotes)
         } catch (e: Exception) {
@@ -214,7 +233,7 @@ class NotesRepository @Inject constructor(
             if (cloudNote != null) {
                 note.copy(
                     cloudId = cloudNote.cloudId,
-                    isSyncedWithCloud = note.content == cloudNote.content
+                    isSyncedWithCloud = note.content.trim() == cloudNote.content.trim()
                 )
             } else {
                 note.copy(isSyncedWithCloud = false)
@@ -227,8 +246,9 @@ class NotesRepository @Inject constructor(
 
     private suspend fun processCloudNotes(cloudNotes: List<Note>, localNotes: List<Note>) {
         for (cloudNote in cloudNotes) {
-            val localNote = localNotes.find { it.cloudId == cloudNote.cloudId || it.id == cloudNote.id }
-            
+            val localNote =
+                localNotes.find { it.cloudId == cloudNote.cloudId || it.id == cloudNote.id }
+
             when {
                 localNote == null -> saveLocally(cloudNote)
                 cloudNote.updatedAt > localNote.updatedAt -> {

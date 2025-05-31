@@ -75,7 +75,7 @@ class ProfileViewModel @Inject constructor(
             _uiState.update {
                 it.copy(
                     isLoading = false,
-                    error = e.message
+                    error = "Не удалось загрузить данные профиля. Проверьте интернет-соединение."
                 )
             }
         }
@@ -113,7 +113,7 @@ class ProfileViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: "Произошла ошибка при обновлении имени"
+                        error = "Не удалось обновить имя пользователя. Проверьте подключение к интернету или повторите попытку позже."
                     )
                 }
             }
@@ -133,7 +133,7 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 _uiState.update { it.copy(isLoading = true) }
-                authenticatedApiService.logout()
+//                authenticatedApiService.logout()
                 authManager.clearAuthData()
                 showLogoutDialog = false
                 _uiState.update { it.copy(isLoading = false) }
@@ -141,7 +141,7 @@ class ProfileViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: "Произошла ошибка при выходе"
+                        error = "Не удалось выйти из аккаунта. Проверьте подключение к интернету или повторите попытку позже."
                     )
                 }
             }

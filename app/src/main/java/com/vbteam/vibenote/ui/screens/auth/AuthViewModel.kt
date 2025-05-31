@@ -116,7 +116,9 @@ class AuthViewModel @Inject constructor(
                 login(email, password)
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Sign in failed", e)
-                _uiState.update { it.copy(error = "Failed to sign in: ${e.message}") }
+                _uiState.update { it.copy(error = "Не удалось войти. Проверьте учетные данные.") }
+            } finally {
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
         return true
@@ -131,7 +133,9 @@ class AuthViewModel @Inject constructor(
                 register(name, email, password)
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Registration failed", e)
-                _uiState.update { it.copy(error = "Failed to register: ${e.message}") }
+                _uiState.update { it.copy(error = "Не удалось зарегистрироваться. Попробуйте другой email.") }
+            } finally {
+                _uiState.update { it.copy(isLoading = false) }
             }
         }
         return true
@@ -155,14 +159,14 @@ class AuthViewModel @Inject constructor(
                     onFailure = { e ->
                         Log.e("AuthViewModel", "Login failed", e)
                         _uiState.update { 
-                            it.copy(error = "Failed to login: ${e.message}")
+                            it.copy(error = "Не удалось войти. Проверьте учетные данные.")
                         }
                     }
                 )
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Login failed", e)
                 _uiState.update { 
-                    it.copy(error = "Failed to login: ${e.message}")
+                    it.copy(error = "Произошла непредвиденная ошибка. Повторите попытку позже.")
                 }
             } finally {
                 _uiState.update { it.copy(isLoading = false) }
@@ -189,16 +193,12 @@ class AuthViewModel @Inject constructor(
                     },
                     onFailure = { e ->
                         Log.e("AuthViewModel", "Registration failed", e)
-                        _uiState.update { 
-                            it.copy(error = "Failed to register: ${e.message}")
-                        }
+                        _uiState.update { it.copy(error = "Не удалось зарегистрироваться. Попробуйте другой email.") }
                     }
                 )
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Registration failed", e)
-                _uiState.update { 
-                    it.copy(error = "Failed to register: ${e.message}")
-                }
+                _uiState.update { it.copy(error = "Произошла непредвиденная ошибка. Повторите попытку позже.") }
             } finally {
                 _uiState.update { it.copy(isLoading = false) }
             }
@@ -220,9 +220,7 @@ class AuthViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Logout failed", e)
-                _uiState.update { 
-                    it.copy(error = "Failed to logout: ${e.message}")
-                }
+                _uiState.update { it.copy(error = "Не удалось выйти из аккаунта. Попробуйте еще раз.") }
             } finally {
                 _uiState.update { it.copy(isLoading = false) }
             }

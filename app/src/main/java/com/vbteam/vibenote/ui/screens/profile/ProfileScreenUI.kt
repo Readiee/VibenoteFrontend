@@ -227,7 +227,7 @@ fun ProfileScreenUI(
                     BaseButton(
                         onClick = { viewModel.changeUsername() },
                         modifier = Modifier.fillMaxWidth(),
-                        text = if (uiState.isLoading) "Сохранение..." else "Сохранить",
+                        text = if (uiState.isLoading) "Сохранить" else "Сохранить",
                         type = AppButtonType.PRIMARY,
                         enabled = !uiState.isLoading && viewModel.isButtonEnabled
                     )
@@ -252,9 +252,10 @@ fun ProfileScreenUI(
                         onClick = { viewModel.showLogoutConfirmation() },
                         modifier = Modifier.fillMaxWidth(),
                         icon = Icons.AutoMirrored.Filled.Logout,
-                        text = if (uiState.isLoading) "Выход..." else "Выйти из аккаунта",
+                        // text = if (uiState.isLoading) "Выход..." else "Выйти из аккаунта",
+                        text = "Выйти из аккаунта",
                         type = AppButtonType.SECONDARY,
-                        enabled = !uiState.isLoading
+                        // enabled = !uiState.isLoading
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))

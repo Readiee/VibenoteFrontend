@@ -9,7 +9,7 @@ data class NoteUiState(
     val id: String? = null,
     val cloudId: String? = null,
     val content: String = "",
-    val title: String = content.take(30),
+    val title: String = "",
     val tags: List<Tag> = emptyList(),
     val analysis: Analysis? = null,
     val createdAt: LocalDateTime = LocalDateTime.now(),
@@ -18,12 +18,16 @@ data class NoteUiState(
     // Sync state
     val syncState: SyncState = SyncState.NotSynced,
     val isAnalyzed: Boolean = false,
+    val hasLocalChanges: Boolean = false,
 
     // Loading states
     val loadingState: LoadingState = LoadingState.Idle,
 
     // UI Message state
-    val uiMessage: UiMessage? = null
+    val uiMessage: UiMessage? = null,
+
+    // Saving state
+    val isSavingToCloud: Boolean = false
 )
 
 enum class LoadingState {
@@ -38,6 +42,7 @@ sealed class SyncState {
     data object Synced : SyncState()           // Синхронизировано с облаком
     data object SyncInProgress : SyncState()   // Идет синхронизация
     data object UnsyncedChanges : SyncState()  // Есть в облаке, но есть несинхронизированные изменения
+    data object Analyzed : SyncState() // Заметка проанализирована и сохранена в облаке
 }
 
 sealed class UiMessage {

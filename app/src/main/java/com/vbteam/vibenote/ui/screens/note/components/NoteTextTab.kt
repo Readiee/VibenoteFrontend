@@ -21,6 +21,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vbteam.vibenote.ui.screens.note.NoteUiState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.foundation.interaction.MutableInteractionSource
 
 @Composable
 fun NoteTextTab(
@@ -29,11 +33,14 @@ fun NoteTextTab(
     onTryEditNote: () -> Unit
 ) {
     val scrollState = rememberScrollState()
+    val focusRequester = remember { FocusRequester() }
+    val interactionSource = remember { MutableInteractionSource() }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
 //            .imePadding()
+            .clickable(indication = null, interactionSource = interactionSource) { focusRequester.requestFocus() }
     ) {
         Column(
             modifier = Modifier
@@ -50,7 +57,8 @@ fun NoteTextTab(
                 placeholder = { Text("Текст", style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Normal)) },
                 modifier = Modifier
                     .fillMaxSize()
-                    .weight(1f),
+                    .focusRequester(focusRequester),
+                    // .weight(1f), ломает UI
                 textStyle = MaterialTheme.typography.bodyMedium.copy(
                     lineHeight = 22.sp,
                     fontWeight = FontWeight.Normal

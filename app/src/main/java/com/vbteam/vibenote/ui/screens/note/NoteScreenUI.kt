@@ -3,7 +3,8 @@ package com.vbteam.vibenote.ui.screens.note
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
-import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -61,10 +63,7 @@ import com.vbteam.vibenote.ui.screens.note.components.NoteAnalysisTab
 import com.vbteam.vibenote.ui.screens.note.components.NoteTextTab
 import com.vbteam.vibenote.ui.theme.LocalAppDimens
 import java.time.format.DateTimeFormatter
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.CircularProgressIndicator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -123,7 +122,13 @@ fun NoteScreenUI(
     }
 
     BackHandler {
-        viewModel.saveNote(saveToCloud = false)
+//        if (uiState.isSavingToCloud) {
+//            return@BackHandler
+//        }
+        
+        if (uiState.hasLocalChanges) {
+            viewModel.saveNote(saveToCloud = false)
+        }
         navController.navigateUp()
     }
 
@@ -214,6 +219,7 @@ fun NoteScreenUI(
                                         is SyncState.SyncInProgress -> "Синхронизация..."
                                         is SyncState.NotSynced -> "Черновик"
                                         is SyncState.UnsyncedChanges -> "Не синхронизировано"
+                                        is SyncState.Analyzed -> "Пронанализировано"
                                     },
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -235,9 +241,12 @@ fun NoteScreenUI(
                     floatingActionButton = {
                         val interactionSource = remember { MutableInteractionSource() }
                         val isSynced = uiState.syncState is SyncState.Synced
+                        val isSavingToCloud = uiState.isSavingToCloud
+                        val isAnalyzed = uiState.syncState is SyncState.Analyzed
+                        val isButtonDisabled = isSynced || isSavingToCloud || isAnalyzed
 
-                        LaunchedEffect(isSynced) {
-                            if (isSynced) {
+                        LaunchedEffect(isButtonDisabled) {
+                            if (isButtonDisabled) {
                                 interactionSource.emit(
                                     PressInteraction.Cancel(PressInteraction.Press(Offset.Zero))
                                 )
@@ -246,26 +255,34 @@ fun NoteScreenUI(
 
                         FloatingActionButton(
                             onClick = {
-                                if (!isSynced) {
+                                if (!isButtonDisabled) {
                                     if (uiState.content.isBlank() || uiState.content.length < 100)
                                         viewModel.showMessage(UiMessage.TooShortText)
                                     else viewModel.saveNote(saveToCloud = true)
                                 }
                             },
                             containerColor = MaterialTheme.colorScheme.primary,
-                            elevation = if (!isSynced)
+                            elevation = if (!isButtonDisabled)
                                 FloatingActionButtonDefaults.bottomAppBarFabElevation()
                             else FloatingActionButtonDefaults.bottomAppBarFabElevation(0.dp),
                             shape = CircleShape,
-                            modifier = Modifier.alpha(if (!isSynced) 1f else 0.38f),
+                            modifier = Modifier.alpha(if (!isButtonDisabled) 1f else 0.38f),
                             interactionSource = interactionSource
                         ) {
-                            Icon(
-                                Icons.Outlined.CloudUpload,
-                                contentDescription = if (!isSynced)
-                                    "Save on cloud"
-                                else "Already saved on cloud",
-                            )
+                            if (uiState.isSavingToCloud) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Icon(
+                                    Icons.Outlined.CloudUpload,
+                                    contentDescription = if (!isSynced)
+                                        "Save on cloud"
+                                    else "Already saved on cloud",
+                                )
+                            }
                         }
                     }
                 )
@@ -279,7 +296,7 @@ fun NoteScreenUI(
                 .padding(
                     top = padding.calculateTopPadding() + 4.dp,
                     bottom = padding.calculateBottomPadding() - 20.dp,
-                )
+                    )
         ) {
             /*
             TabSwitcher(selectedTabIndex = selectedTab) { tabIndex ->

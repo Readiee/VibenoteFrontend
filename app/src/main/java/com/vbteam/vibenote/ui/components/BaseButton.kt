@@ -26,12 +26,13 @@ enum class AppButtonType {
 
 @Composable
 fun BaseButton(
-    text: String,
+    text: String? = null,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     type: AppButtonType = AppButtonType.PRIMARY,
     enabled: Boolean = true,
-    icon: ImageVector? = null
+    icon: ImageVector? = null,
+    content: @Composable (() -> Unit)? = null
 ) {
     val backgroundColor: Color
     val contentColor: Color
@@ -80,9 +81,12 @@ fun BaseButton(
             )
             Spacer(modifier = Modifier.width(12.dp))
         }
-        Text(
-            text = text,
-            style = MaterialTheme.typography.headlineSmall,
-        )
+        if (text != null) {
+            Text(
+                text = text,
+                style = MaterialTheme.typography.headlineSmall,
+            )
+        }
+        content?.invoke()
     }
 }

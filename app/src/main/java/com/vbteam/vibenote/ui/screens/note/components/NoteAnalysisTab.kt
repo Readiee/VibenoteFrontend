@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +36,7 @@ import com.vbteam.vibenote.ui.components.AppButtonType
 import com.vbteam.vibenote.ui.components.BaseAlertDialog
 import com.vbteam.vibenote.ui.components.BaseButton
 import com.vbteam.vibenote.ui.components.BaseCard
+import com.vbteam.vibenote.ui.screens.note.LoadingState
 import com.vbteam.vibenote.ui.screens.note.NoteUiState
 import com.vbteam.vibenote.ui.screens.note.SyncState
 
@@ -42,6 +44,7 @@ import com.vbteam.vibenote.ui.screens.note.SyncState
 @Composable
 fun NoteAnalysisTab(uiState: NoteUiState, onAnalyzeClicked: () -> Unit) {
     val isSynced = uiState.syncState is SyncState.Synced
+    val isAnalyzing = uiState.loadingState == LoadingState.Analyzing
     var showConfirmDialog by remember { mutableStateOf(false) }
 
     if (showConfirmDialog) {
@@ -99,9 +102,12 @@ fun NoteAnalysisTab(uiState: NoteUiState, onAnalyzeClicked: () -> Unit) {
             BaseButton(
                 onClick = { showConfirmDialog = true },
                 modifier = Modifier.fillMaxWidth(),
-                text = "Анализировать запись",
+                text = if (isAnalyzing) null else "Анализировать запись",
                 type = AppButtonType.PRIMARY,
-                enabled = isSynced
+                enabled = isSynced && !isAnalyzing,
+                content = if (isAnalyzing) {
+                    { CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary) }
+                } else null
             )
             Spacer(modifier = Modifier.height(20.dp))
         }
