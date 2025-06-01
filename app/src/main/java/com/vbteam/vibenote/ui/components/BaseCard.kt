@@ -19,7 +19,7 @@ fun BaseCard (modifier: Modifier = Modifier, content: @Composable (ColumnScope.(
             contentColor = MaterialTheme.colorScheme.onBackground
         ),
         modifier = modifier
-            .padding(horizontal =  16.dp, vertical = 20.dp)
+            .padding(horizontal =  12.dp, vertical = 16.dp)
             .fillMaxWidth(),
         content = content
     )
