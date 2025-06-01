@@ -40,7 +40,6 @@ class CloudService @Inject constructor(
             val response = entryApi.analyzeEntry(noteId)
             Analysis(
                 id = response.id,
-                entryText = response.entryText,
                 result = response.result,
                 tags = response.tags.map { it.toDomain() }
             )

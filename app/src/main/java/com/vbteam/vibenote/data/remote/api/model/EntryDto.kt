@@ -5,12 +5,17 @@ data class EntryDto(
     val content: String,
     val createdAt: String,
     val updatedAt: String,
-    val tags: List<TagDto>
+    val tags: List<EntryTagDto>
 )
 
-data class TagDto(
-    val tagName: String,
+data class EntryTagDto(
+    val tag: EntryTagInfoDto,
     val value: Int
+)
+
+data class EntryTagInfoDto(
+    val id: String,
+    val name: String
 )
 
 data class CreateEntryRequest(

@@ -125,7 +125,7 @@ fun NoteScreenUI(
 //        if (uiState.isSavingToCloud) {
 //            return@BackHandler
 //        }
-        
+
         if (uiState.hasLocalChanges) {
             viewModel.saveNote(saveToCloud = false)
         }
@@ -366,6 +366,7 @@ fun NoteScreenUI(
                     onConfirmation = {
                         viewModel.clearMessage()
                         navController.navigate("sign_in")
+                        viewModel.saveNote(saveToCloud = false)
                     }
                 )
             }

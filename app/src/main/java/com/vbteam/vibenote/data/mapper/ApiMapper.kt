@@ -1,7 +1,16 @@
 package com.vbteam.vibenote.data.mapper
 
 import com.vbteam.vibenote.data.model.*
-import com.vbteam.vibenote.data.remote.api.model.*
+import com.vbteam.vibenote.data.remote.api.model.AnalysisDto
+import com.vbteam.vibenote.data.remote.api.model.AnalysisResponse
+import com.vbteam.vibenote.data.remote.api.model.AnalysisTagDto
+import com.vbteam.vibenote.data.remote.api.model.CreateEntryRequest
+import com.vbteam.vibenote.data.remote.api.model.EntryDetailsDto
+import com.vbteam.vibenote.data.remote.api.model.EntryDto
+import com.vbteam.vibenote.data.remote.api.model.EntryTagDto
+import com.vbteam.vibenote.data.remote.api.model.TagInfoDto
+import com.vbteam.vibenote.data.remote.api.model.TriggerWordDto
+import com.vbteam.vibenote.data.remote.api.model.UpdateEntryRequest
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
@@ -46,9 +55,9 @@ fun EntryDto.toDomain(): Note {
     )
 }
 
-fun TagDto.toDomain(): Tag {
+fun EntryTagDto.toDomain(): Tag {
     return Tag(
-        name = tagName,
+        name = tag.name ?: "",
         value = value
     )
 }
@@ -62,9 +71,15 @@ fun Note.toCreateRequest(): CreateEntryRequest {
 fun AnalysisDto.toDomain(): Analysis {
     return Analysis(
         id = id,
-        entryText = entryText,
         result = result,
         tags = tags.map { it.toDomain() }
+    )
+}
+
+fun AnalysisTag.toTag(): Tag {
+    return Tag(
+        name = this.tag.name,
+        value = this.value
     )
 }
 
@@ -97,13 +112,15 @@ fun Note.toUpdateRequest(): UpdateEntryRequest {
 }
 
 fun EntryDetailsDto.toDomain(): Note {
+    val domainAnalysis = analysis?.toDomain()
     return Note(
         id = UUID.randomUUID().toString(),
         cloudId = id,
         content = content,
         createdAt = DateConverter.parseDateTime(createdAt),
         updatedAt = DateConverter.parseDateTime(updatedAt),
-        analysis = analysis?.toDomain(),
+        analysis = domainAnalysis,
+        tags = domainAnalysis?.tags?.map { it.toTag() } ?: emptyList(),
         isSyncedWithCloud = true
     )
 }
@@ -111,7 +128,6 @@ fun EntryDetailsDto.toDomain(): Note {
 fun AnalysisResponse.toDomain(): Analysis {
     return Analysis(
         id = id,
-        entryText = entryText,
         result = result,
         tags = tags.map { it.toDomain() }
     )

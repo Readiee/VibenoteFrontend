@@ -185,18 +185,40 @@ class NotesRepository @Inject constructor(
             val localNotes = localNoteDao.getAllNotesAsList().map { it.toDomain() }
             Log.d("NotesRepository", "Found ${localNotes.size} local notes")
 
-            // Находим отсутствующие локально заметки (по cloudId)
-            val localCloudIds = localNotes.mapNotNull { it.cloudId }.toSet()
-            val missingNotes = cloudNotes.filter { cloudNote ->
-                cloudNote.cloudId != null && !localCloudIds.contains(cloudNote.cloudId)
-            }
-            Log.d("NotesRepository", "Found ${missingNotes.size} missing notes to download")
+            cloudNotes.forEach { cloudNote ->
+                val existingLocalNote = localNotes.find {
+                    it.cloudId == cloudNote.cloudId || (it.cloudId == null && it.content == cloudNote.content)
+                }
 
-            missingNotes.forEach { note ->
-                Log.d("NotesRepository", "Saving missing note with cloudId: ${note.cloudId}")
-                saveLocally(note.copy(isSyncedWithCloud = true))
+                if (existingLocalNote == null) {
+                    // Note does not exist locally, save it
+                    Log.d("NotesRepository", "Saving missing note with cloudId: ${cloudNote.cloudId ?: "N/A"}")
+                    saveLocally(cloudNote.copy(isSyncedWithCloud = true))
+                } else if (existingLocalNote.updatedAt < cloudNote.updatedAt) {
+                    // Cloud note is newer, update local note
+                    Log.d("NotesRepository", "Updating existing local note with cloudId: ${cloudNote.cloudId ?: "N/A"}")
+                    val updatedNote = existingLocalNote.copy(
+                        cloudId = cloudNote.cloudId,
+                        content = cloudNote.content,
+                        createdAt = cloudNote.createdAt,
+                        updatedAt = cloudNote.updatedAt,
+                        analysis = cloudNote.analysis,
+                        tags = cloudNote.tags,
+                        isSyncedWithCloud = true
+                    )
+                    saveLocally(updatedNote)
+                } else if (existingLocalNote.cloudId == null && cloudNote.cloudId != null) {
+                    // Local note exists but not synced, update with cloudId
+                    Log.d("NotesRepository", "Updating existing local note with cloudId from cloud: ${cloudNote.cloudId}")
+                    val updatedNote = existingLocalNote.copy(
+                        cloudId = cloudNote.cloudId,
+                        isSyncedWithCloud = true
+                    )
+                    saveLocally(updatedNote)
+                }
             }
-            Log.d("NotesRepository", "Successfully saved all missing notes")
+
+            Log.d("NotesRepository", "Finished loading missing notes from cloud")
         } catch (e: Exception) {
             Log.e("NotesRepository", "Failed to load missing notes from cloud", e)
             throw Exception("Failed to load missing notes from cloud", e)
@@ -246,19 +268,33 @@ class NotesRepository @Inject constructor(
 
     private suspend fun processCloudNotes(cloudNotes: List<Note>, localNotes: List<Note>) {
         for (cloudNote in cloudNotes) {
-            val localNote =
-                localNotes.find { it.cloudId == cloudNote.cloudId || it.id == cloudNote.id }
+            val existingLocalNote = localNotes.find { localNote ->
+                localNote.cloudId == cloudNote.cloudId ||
+                (localNote.cloudId == null && localNote.content.trim() == cloudNote.content.trim())
+            }
 
             when {
-                localNote == null -> saveLocally(cloudNote)
-                cloudNote.updatedAt > localNote.updatedAt -> {
-                    val updatedNote = localNote.copy(
+                existingLocalNote == null -> {
+                    // Note does not exist locally, save it
+                    saveLocally(cloudNote.copy(isSyncedWithCloud = true))
+                }
+                cloudNote.updatedAt > existingLocalNote.updatedAt -> {
+                    // Cloud note is newer, update local note
+                    val updatedNote = existingLocalNote.copy(
                         content = cloudNote.content,
                         updatedAt = cloudNote.updatedAt,
                         cloudId = cloudNote.cloudId,
                         isSyncedWithCloud = true,
                         analysis = cloudNote.analysis,
                         tags = cloudNote.tags
+                    )
+                    saveLocally(updatedNote)
+                }
+                existingLocalNote.cloudId == null && cloudNote.cloudId != null -> {
+                    // Local note exists but not synced, update with cloudId
+                    val updatedNote = existingLocalNote.copy(
+                        cloudId = cloudNote.cloudId,
+                        isSyncedWithCloud = true
                     )
                     saveLocally(updatedNote)
                 }

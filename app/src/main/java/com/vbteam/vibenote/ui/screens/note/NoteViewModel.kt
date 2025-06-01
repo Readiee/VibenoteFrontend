@@ -96,6 +96,11 @@ class NoteViewModel @Inject constructor(
         if (state.content.isBlank()) return
 
         viewModelScope.launch {
+            if (saveToCloud && !isUserAuthenticated()) {
+                showMessage(UiMessage.AuthRequired)
+                return@launch
+            }
+
             if (saveToCloud) {
                 _uiState.update { it.copy(
                     isSavingToCloud = true,

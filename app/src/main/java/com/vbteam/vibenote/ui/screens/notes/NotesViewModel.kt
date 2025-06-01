@@ -64,16 +64,18 @@ class NotesViewModel @Inject constructor(
                 
                 // Загружаем недостающие заметки из облака
                 try {
-                    Log.d("NotesViewModel", "Loading missing notes from cloud...")
-                    notesRepository.loadMissingNotesFromCloud()
-                    Log.d("NotesViewModel", "Successfully loaded missing notes from cloud")
+                    // Log.d("NotesViewModel", "Loading missing notes from cloud...")
+                    // notesRepository.loadMissingNotesFromCloud()
+                    // Log.d("NotesViewModel", "Successfully loaded missing notes from cloud")
                 } catch (e: Exception) {
                     Log.e("NotesViewModel", "Failed to load missing notes", e)
                 }
                 
                 // Синхронизируем с облаком (только загрузка)
                 Log.d("NotesViewModel", "Starting cloud sync...")
-                syncWithCloud()
+                if (!uiState.value.isSyncing) {
+                    syncWithCloud()
+                }
             } catch (e: Exception) {
                 Log.e("NotesViewModel", "Failed to load notes", e)
                 _uiState.update { it.copy(

@@ -6,14 +6,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +39,6 @@ import com.vbteam.vibenote.ui.screens.note.LoadingState
 import com.vbteam.vibenote.ui.screens.note.NoteUiState
 import com.vbteam.vibenote.ui.screens.note.SyncState
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun NoteAnalysisTab(uiState: NoteUiState, onAnalyzeClicked: () -> Unit) {
     val isSynced = uiState.syncState is SyncState.Synced
@@ -140,21 +138,35 @@ fun NoteAnalysisTab(uiState: NoteUiState, onAnalyzeClicked: () -> Unit) {
                 ) {
                     Text(text = "Эмоции", style = MaterialTheme.typography.titleSmall)
 
-                    FlowRow(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        maxItemsInEachRow = 3,
+                    val sortedTags = uiState.tags.sortedByDescending { it.value }
+
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Log.d("NoteAnalysisTab", "Rendering tags: ${uiState.tags}")
-                        uiState.tags.forEach { tag ->
-                            val emotion = tag.convertToEmotion()
-                            Log.d("NoteAnalysisTab", "Tag: $tag -> Emotion: $emotion")
-                            EmotionTag(
-                                tag = tag,
-                                emotion = emotion,
-                                modifier = Modifier.weight(1f, fill = false)
-                            )
+                        for (i in sortedTags.indices step 2) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                val tag1 = sortedTags[i]
+                                val emotion1 = tag1.convertToEmotion()
+                                EmotionTag(
+                                    tag = tag1,
+                                    emotion = emotion1,
+                                    modifier = if (i + 1 < sortedTags.size) Modifier.weight(1f) else Modifier.fillMaxWidth()
+                                )
+
+                                if (i + 1 < sortedTags.size) {
+                                    val tag2 = sortedTags[i + 1]
+                                    val emotion2 = tag2.convertToEmotion()
+                                    EmotionTag(
+                                        tag = tag2,
+                                        emotion = emotion2,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
                         }
                     }
                 }

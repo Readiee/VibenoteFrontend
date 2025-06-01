@@ -2,7 +2,6 @@ package com.vbteam.vibenote.data.model
 
 data class Analysis(
     val id: String,
-    val entryText: String,
     val result: String,
     val tags: List<AnalysisTag>
 )
