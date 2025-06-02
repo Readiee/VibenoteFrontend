@@ -82,7 +82,7 @@ fun NoteScreenUI(
             when (message) {
                 is UiMessage.TooShortText -> snackbarHostState.showCustomSnackbar(
                     title = "Слишком короткий текст",
-                    message = "Для сохранения текст должен содержать минимум 100 символов",
+                    message = "Для сохранения текст должен содержать минимум 50 символов",
                     type = SnackbarType.WARNING
                 )
 
@@ -256,7 +256,7 @@ fun NoteScreenUI(
                         FloatingActionButton(
                             onClick = {
                                 if (!isButtonDisabled) {
-                                    if (uiState.content.isBlank() || uiState.content.length < 100)
+                                    if (uiState.content.isBlank() || uiState.content.length < 50)
                                         viewModel.showMessage(UiMessage.TooShortText)
                                     else viewModel.saveNote(saveToCloud = true)
                                 }
