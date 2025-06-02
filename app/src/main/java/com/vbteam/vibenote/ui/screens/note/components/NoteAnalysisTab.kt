@@ -38,6 +38,8 @@ import com.vbteam.vibenote.ui.components.BaseCard
 import com.vbteam.vibenote.ui.screens.note.LoadingState
 import com.vbteam.vibenote.ui.screens.note.NoteUiState
 import com.vbteam.vibenote.ui.screens.note.SyncState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 @Composable
 fun NoteAnalysisTab(uiState: NoteUiState, onAnalyzeClicked: () -> Unit) {
@@ -66,7 +68,9 @@ fun NoteAnalysisTab(uiState: NoteUiState, onAnalyzeClicked: () -> Unit) {
     if (!uiState.isAnalyzed) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(40.dp))
 
@@ -113,7 +117,8 @@ fun NoteAnalysisTab(uiState: NoteUiState, onAnalyzeClicked: () -> Unit) {
     // -- 2. Если запись уже проанализирована --
     else {
         Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(4.dp))
             // 2.1. Эмоции
