@@ -205,9 +205,9 @@ fun NoteAnalysisTab(uiState: NoteUiState, onAnalyzeClicked: () -> Unit) {
                             fontWeight = FontWeight.Normal
                         )
                     )
-                    Spacer(modifier = Modifier.height(20.dp))
                 }
             }
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
