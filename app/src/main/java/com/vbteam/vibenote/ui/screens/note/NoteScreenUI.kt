@@ -293,10 +293,7 @@ fun NoteScreenUI(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    top = padding.calculateTopPadding() + 4.dp,
-                    bottom = padding.calculateBottomPadding() - 20.dp,
-                    )
+                .padding(padding)
         ) {
             /*
             TabSwitcher(selectedTabIndex = selectedTab) { tabIndex ->

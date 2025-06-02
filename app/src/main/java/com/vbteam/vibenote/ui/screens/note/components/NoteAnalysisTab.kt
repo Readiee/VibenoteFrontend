@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -70,34 +71,41 @@ fun NoteAnalysisTab(uiState: NoteUiState, onAnalyzeClicked: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(16.dp)
-                .verticalScroll(rememberScrollState())
+                .fillMaxHeight()
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
-
-            Image(
-                painter = painterResource(id = if (isSynced) R.drawable.illustration_ok else R.drawable.illustration_cross),
-                contentDescription = null,
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .width(128.dp)
-                    .aspectRatio(1f)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = if (isSynced) "Текст готов к анализу" else "Текст не готов к анализу",
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onBackground,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = if (isSynced) 
-                    "Нажмите на кнопку «Анализировать запись», чтобы получить рекомендации." 
-                else 
-                    "Сохраните запись в облако во вкладке «Запись», прежде чем его проанализировать.",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center
-            )
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Spacer(modifier = Modifier.height(40.dp))
+
+                Image(
+                    painter = painterResource(id = if (isSynced) R.drawable.illustration_ok else R.drawable.illustration_cross),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .width(128.dp)
+                        .aspectRatio(1f)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = if (isSynced) "Текст готов к анализу" else "Текст не готов к анализу",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = if (isSynced) 
+                        "Нажмите на кнопку «Анализировать запись», чтобы получить рекомендации." 
+                    else 
+                        "Сохраните запись в облако во вкладке «Запись», прежде чем его проанализировать.",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    textAlign = TextAlign.Center
+                )
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 

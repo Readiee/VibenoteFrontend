@@ -6,10 +6,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+@Preview
+
 fun BaseTopBar(
     modifier: Modifier = Modifier,
     leftContent: @Composable RowScope.() -> Unit = {},
@@ -19,7 +22,7 @@ fun BaseTopBar(
     val onBackgroundColor = MaterialTheme.colorScheme.onBackground
 
     TopAppBar(
-        expandedHeight = 68.dp,
+        expandedHeight = 76.dp,
         modifier = modifier,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background,
