@@ -22,7 +22,7 @@ fun BaseTopBar(
     val onBackgroundColor = MaterialTheme.colorScheme.onBackground
 
     TopAppBar(
-        expandedHeight = 76.dp,
+        expandedHeight = 68.dp,
         modifier = modifier,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background,
