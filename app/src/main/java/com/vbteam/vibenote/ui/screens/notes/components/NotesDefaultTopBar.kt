@@ -1,8 +1,10 @@
 package com.vbteam.vibenote.ui.screens.notes.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.rounded.Search
@@ -28,11 +30,13 @@ fun NotesDefaultTopBar(
 ) {
     BaseTopBar(
         centerContent = {
-            Image(
+            Icon(
                 painter = painterResource(id = R.drawable.logo_ext),
                 contentDescription = null,
                 modifier = Modifier
-                    .height(32.dp)
+                    .width(108.dp)
+                    .aspectRatio(1f),
+                tint = MaterialTheme.colorScheme.onBackground
             )
             /*
             Text(
