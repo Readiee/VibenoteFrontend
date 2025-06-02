@@ -194,8 +194,9 @@ fun NoteAnalysisTab(uiState: NoteUiState, onAnalyzeClicked: () -> Unit) {
                     Text(text = "Рекомендации", style = MaterialTheme.typography.titleSmall)
                     Text(
                         text = uiState.analysis?.result ?: "Реккомендаций нет.",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            lineHeight = 22.sp,
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontSize = 14.sp,
+                            lineHeight = 20.sp,
                             fontWeight = FontWeight.Normal
                         )
                     )
