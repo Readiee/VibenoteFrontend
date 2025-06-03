@@ -36,7 +36,7 @@ VibeNote — это Android-приложение, позволяющее пол�
 
 ```kotlin
 object ApiConfig {
-    const val BASE_URL = "http://your-api-url:port/"
+    const val BASE_URL = "http://your-api-url:port/" // http://10.0.2.2:8511/ - localhost
     // ... другие настройки
 }
 ```
