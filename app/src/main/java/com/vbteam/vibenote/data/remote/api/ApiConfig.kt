@@ -1,8 +1,7 @@
 package com.vbteam.vibenote.data.remote.api
 
 object ApiConfig {
-//    const val BASE_URL = "http://10.0.2.2:8511/"
-    const val BASE_URL = "http://192.168.0.2:8511/"
+    const val BASE_URL = "http://10.0.2.2:8511/"
 
     object Timeouts {
         const val CONNECT_TIMEOUT_SECONDS = 30L
